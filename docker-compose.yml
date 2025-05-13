@@ -1,10 +1,21 @@
 # version: '3.8'
 
 services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tasks
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
   backend:
     build: 
       context: ./backend
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     ports:
       - "3001:3001"
     volumes:
@@ -18,7 +29,7 @@ services:
   frontend:
     build: 
       context: ./frontend
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     volumes:
@@ -29,3 +40,6 @@ services:
     environment:
       REACT_APP_API_URL: http://localhost:3001/api
     command: npm start
+
+volumes:
+  db_data:
